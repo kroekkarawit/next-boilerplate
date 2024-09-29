@@ -1,0 +1,195 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGODB_URI")
+}
+
+model user {
+  id              String           @id @default(auto()) @map("_id") @db.ObjectId
+  name            String?
+  username        String           @unique
+  password        String?
+  mobile          String?
+  email           String?
+  balance         Float            @default(0.00)
+  remark          String?
+  status          user_status      @default(ACTIVE)
+  ip_address      String?
+  referrer        String?          @db.ObjectId
+  updated_at      DateTime         @updatedAt
+  created_at      DateTime         @default(now())
+  social_accounts social_account[]
+  transactions    transaction[]
+  deposits        deposit[]
+  withdraws       withdraw[]
+  pay_bills       pay_bill[]
+  bills           bill[]
+  fees            fee[]
+  banks           bank[]
+}
+
+model social_account {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  provider         String // e.g., 'google', 'line'
+  provider_user_id String // e.g., sub from OAuth profile
+  email            String? // Email if available from the provider
+  name             String? // Full name from the provider
+  picture          String? // Profile picture URL from the provider
+  user             user     @relation(fields: [user_id], references: [id])
+  user_id          String   @db.ObjectId
+  updated_at       DateTime @updatedAt
+  created_at       DateTime @default(now())
+
+  @@unique([provider, provider_user_id])
+}
+
+enum user_status {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+model bank {
+  id         String      @id @default(auto()) @map("_id") @db.ObjectId
+  user       user        @relation(fields: [user_id], references: [id])
+  user_id    String      @db.ObjectId
+  name       String
+  code       String
+  number     String
+  status     bank_status
+  created_at DateTime    @default(now())
+}
+
+enum bank_status {
+  ACTIVE
+  INACTIVE
+}
+
+model transaction {
+  id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  user       user             @relation(fields: [user_id], references: [id])
+  user_id    String           @db.ObjectId
+  amount     Float
+  ref        String?          @db.ObjectId
+  type       transaction_type
+  created_at DateTime         @default(now())
+}
+
+enum transaction_type {
+  DEPOSIT
+  WITHDRAW
+  PAY_BILL
+  PURCHASE
+  FEE
+  COMMISSION
+  TRANFER
+  REFUND
+}
+
+model deposit {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  user       user           @relation(fields: [user_id], references: [id])
+  user_id    String         @db.ObjectId
+  amount     Float
+  fee        Float
+  gateway    String
+  detail     String?
+  remark     String?
+  status     deposit_status
+  created_at DateTime       @default(now())
+}
+
+enum deposit_status {
+  COMPLETE
+  CANCEL
+  PENDING
+}
+
+model withdraw {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  user       user           @relation(fields: [user_id], references: [id])
+  user_id    String         @db.ObjectId
+  amount     Float
+  fee        Float
+  bank_id    String
+  detail     String?
+  remark     String?
+  status     deposit_status
+  created_at DateTime       @default(now())
+}
+
+enum withdraw_status {
+  COMPLETE
+  CANCEL
+  PENDING
+}
+
+model pay_bill {
+  id         String         @id @default(auto()) @map("_id") @db.ObjectId
+  user       user           @relation(fields: [user_id], references: [id])
+  user_id    String         @db.ObjectId
+  amount     Float
+  fee        Float
+  bank_id    String
+  detail     String?
+  remark     String?
+  status     deposit_status
+  created_at DateTime       @default(now())
+}
+
+model bill {
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  owner              user        @relation(fields: [owner_id], references: [id])
+  owner_id           String      @db.ObjectId
+  actual_amount      Float
+  receive_amount     Float
+  fee_percent        Float
+  detail             String
+  image              String
+  confirmation_image String
+  category_id        String      @db.ObjectId
+  status             bill_status
+  updated_at         DateTime    @updatedAt
+  created_at         DateTime    @default(now())
+}
+
+model fee {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  user       user     @relation(fields: [user_id], references: [id])
+  user_id    String   @db.ObjectId
+  amount     Float
+  type       fee_type
+  created_at DateTime @default(now())
+}
+
+enum fee_type {
+  CREATE_BILL_FEE
+  PAID_BILL_FEE
+}
+
+enum bill_status {
+  PENDING
+  WAITTING
+  PAYING
+  CONFIRMING
+  COMPLETE
+  INCOMPLETE
+  CANCEL
+}
+
+model category {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  image       String
+  status      status
+}
+
+enum status {
+  ACTIVE
+  INACTIVE
+  PENDING
+}

@@ -1,0 +1,109 @@
+import GoogleProvider from "next-auth/providers/google";
+import LineProvider from "next-auth/providers/line";
+import { PrismaClient } from "@prisma/client";
+import NextAuth, { NextAuthOptions } from "next-auth/index";
+const prisma = new PrismaClient();
+
+export const authOptions: NextAuthOptions = {
+  providers: [
+    GoogleProvider({
+      clientId: process.env.AUTH_GOOGLE_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+    }),
+    LineProvider({
+      authorization: { params: { scope: "openid profile email" } },
+      clientId: process.env.LINE_CLIENT_ID!,
+      clientSecret: process.env.LINE_CLIENT_SECRET!,
+    }),
+  ],
+  secret: process.env.AUTH_SECRET!,
+  callbacks: {
+    async jwt({
+      token,
+      user,
+      account,
+    }: {
+      token: any;
+      user: any;
+      account: any;
+    }) {
+      if (user && account) {
+        const provider = account.provider;
+        const providerUserId = account.providerAccountId;
+
+        // First, try to find the social account by provider and providerUserId
+        const socialAccount = await prisma.social_account.findFirst({
+          where: {
+            provider: provider,
+            provider_user_id: providerUserId,
+          },
+          include: { user: true },
+        });
+
+        let dbUser = socialAccount?.user || null;
+
+        // If no social account is found, check by email
+        if (!dbUser && user.email) {
+          dbUser = await prisma.user.findFirst({
+            where: { email: user.email },
+          });
+        }
+
+        // If no user is found, create a new user and associate with social account
+        if (!dbUser) {
+          dbUser = await prisma.user.create({
+            data: {
+              email: user.email || null,
+              name: user.name,
+              username: user.email?.split("@")[0] || providerUserId,
+              balance: 0.0,
+              social_accounts: {
+                create: {
+                  provider: provider,
+                  provider_user_id: providerUserId,
+                  email: user.email || null,
+                  name: user.name,
+                  picture: user.image,
+                },
+              },
+            },
+          });
+        } else if (!socialAccount) {
+          // If the user exists but no social account for this provider, create it
+          await prisma.social_account.create({
+            data: {
+              provider: provider,
+              provider_user_id: providerUserId,
+              email: user.email || null,
+              name: user.name,
+              picture: user.image,
+              user_id: dbUser.id, // Link it to the existing user
+            },
+          });
+        }
+
+        // Add user data to the token
+        token.id = dbUser.id;
+        token.username = dbUser.username;
+        token.name = dbUser.name;
+        token.balance = dbUser.balance;
+      }
+
+      return token;
+    },
+    async session({ session, token }: { session: any; token: any }) {
+      if (token) {
+        session.user.id = token.id as string;
+        session.user.username = token.username as string;
+        session.user.name = token.name as string;
+        session.user.balance = token.balance as number;
+      }
+
+      return session;
+    },
+  },
+  session: {
+    strategy: "jwt",
+  },
+  debug: process.env.NODE_ENV !== "production",
+};
