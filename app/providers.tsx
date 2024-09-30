@@ -8,7 +8,7 @@ import { Toaster } from "react-hot-toast";
 import { UserProvider } from "./context/UserContext";
 import { ModalProvider } from "./context/modalContext";
 
-import BalanceUpdater from "./components/balanceUpdater";
+import BalanceUpdater from "@/components/balanceUpdater";
 
 export interface ProvidersProps {
   children: React.ReactNode;
