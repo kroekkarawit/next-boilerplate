@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 
@@ -25,10 +24,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     if (session?.user) {
       setUser({
-        id: session.user.id ?? undefined,
-        username: session.user.username ?? undefined,
-        name: session.user.name ?? undefined,
-        balance: session.user.balance ?? undefined,
+        id: (session.user as any).id,
+        username: (session.user as any).username,
+        name: (session.user as any).name,
+        balance: (session.user as any).balance,
       });
     }
   }, [session]);
@@ -49,3 +48,5 @@ export const useUser = () => {
 
   return context;
 };
+
+export default UserProvider;

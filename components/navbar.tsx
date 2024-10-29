@@ -34,6 +34,8 @@ import {
 import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 
+import { Locale } from "@/i18n.config";
+
 export default function Navbar() {
   const { data: session } = useSession();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -63,10 +65,10 @@ export default function Navbar() {
 
   const UserMenu = () => {
     const bgColor = useMemo(
-      () => generateColorFromString(session?.user?.username),
+      () => session?.user?.username ? generateColorFromString(session.user.username) : generateColorFromString("default"),
       [session?.user?.username]
     );
-    const initials = session.user.username.charAt(0).toUpperCase();
+    const initials = session?.user?.username ? session.user.username.charAt(0).toUpperCase() : "user";
 
     return (
       <DropdownMenu>
@@ -83,10 +85,10 @@ export default function Navbar() {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium leading-none">
-                {session.user.name}
+                {session?.user?.name}
               </p>
               <p className="text-xs leading-none text-muted-foreground">
-                {session.user.email}
+                {session?.user?.email}
               </p>
             </div>
           </DropdownMenuLabel>
@@ -98,10 +100,12 @@ export default function Navbar() {
   };
 
   const LanguageSwitcher = () => {
-    const switchLanguage = (locale) => {
+
+    const switchLanguage = (locale: Locale) => {
       const path = pathname.split('/').slice(2).join('/');
       router.push(`/${locale}/${path}`);
     };
+  
 
     return (
       <DropdownMenu>
@@ -179,9 +183,9 @@ export default function Navbar() {
                     <Button onClick={() => signIn("google")}>Login</Button>
                   ) : (
                     <>
-                      <p className="text-sm font-medium">{session.user.name}</p>
+                      <p className="text-sm font-medium">{session?.user?.name}</p>
                       <p className="text-xs text-muted-foreground">
-                        {session.user.email}
+                        {session?.user?.email}
                       </p>
                       <Button onClick={() => signOut()}>Log out</Button>
                     </>

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { ReactNode } from "react";
 
 export const ModalProvider = ({ children }: { children: ReactNode }) => {
   return <></>;

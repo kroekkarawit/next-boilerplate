@@ -23,7 +23,7 @@ const BalanceUpdater = () => {
         } else {
           //console.error("Failed to fetch user data:", data.error);
         }
-      } catch (error) {
+      } catch {
         //console.error("Error fetching user data:", error);
       }
     };
