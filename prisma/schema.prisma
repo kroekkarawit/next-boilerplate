@@ -7,78 +7,79 @@ datasource db {
   url      = env("MONGODB_URI")
 }
 
-model user {
-  id              String           @id @default(auto()) @map("_id") @db.ObjectId
-  name            String?
-  username        String           @unique
-  password        String?
-  mobile          String?
-  email           String?
-  balance         Float            @default(0.00)
-  remark          String?
-  status          user_status      @default(ACTIVE)
-  ip_address      String?
-  referrer        String?          @db.ObjectId
-  updated_at      DateTime         @updatedAt
-  created_at      DateTime         @default(now())
-  social_accounts social_account[]
-  transactions    transaction[]
-  deposits        deposit[]
-  withdraws       withdraw[]
-  pay_bills       pay_bill[]
-  bills           bill[]
-  fees            fee[]
-  banks           bank[]
+model User {
+  id             String          @id @default(auto()) @map("_id") @db.ObjectId
+  name           String?
+  username       String          @unique
+  password       String?
+  mobile         String?
+  email          String?
+  balance        Float           @default(0.00)
+  remark         String?
+  status         UserStatus      @default(ACTIVE)
+  ipAddress      String?
+  referralCode   String          @unique
+  referredBy     String?         @db.ObjectId
+  referredUsers  User[]          @relation("ReferralRelation")
+  referrer       User?           @relation("ReferralRelation", fields: [referredBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  updatedAt      DateTime        @updatedAt
+  createdAt      DateTime        @default(now())
+  socialAccounts SocialAccount[]
+  transactions   Transaction[]
+  deposits       Deposit[]
+  withdraws      Withdraw[]
+  banks          Bank[]
+  fees           Fee[]
 }
 
-model social_account {
-  id               String   @id @default(auto()) @map("_id") @db.ObjectId
-  provider         String // e.g., 'google', 'line'
-  provider_user_id String // e.g., sub from OAuth profile
-  email            String? // Email if available from the provider
-  name             String? // Full name from the provider
-  picture          String? // Profile picture URL from the provider
-  user             user     @relation(fields: [user_id], references: [id])
-  user_id          String   @db.ObjectId
-  updated_at       DateTime @updatedAt
-  created_at       DateTime @default(now())
+model SocialAccount {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  provider       String // e.g., 'google', 'line'
+  providerUserId String // e.g., sub from OAuth profile
+  email          String? // Email if available from the provider
+  name           String? // Full name from the provider
+  picture        String? // Profile picture URL from the provider
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String   @db.ObjectId
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
 
-  @@unique([provider, provider_user_id])
+  @@unique([provider, providerUserId])
 }
 
-enum user_status {
+enum UserStatus {
   ACTIVE
   INACTIVE
   SUSPENDED
 }
 
-model bank {
-  id         String      @id @default(auto()) @map("_id") @db.ObjectId
-  user       user        @relation(fields: [user_id], references: [id])
-  user_id    String      @db.ObjectId
-  name       String
-  code       String
-  number     String
-  status     bank_status
-  created_at DateTime    @default(now())
+model Bank {
+  id        String     @id @default(auto()) @map("_id") @db.ObjectId
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String     @db.ObjectId
+  name      String
+  code      String
+  number    String
+  status    BankStatus
+  createdAt DateTime   @default(now())
 }
 
-enum bank_status {
+enum BankStatus {
   ACTIVE
   INACTIVE
 }
 
-model transaction {
-  id         String           @id @default(auto()) @map("_id") @db.ObjectId
-  user       user             @relation(fields: [user_id], references: [id])
-  user_id    String           @db.ObjectId
-  amount     Float
-  ref        String?          @db.ObjectId
-  type       transaction_type
-  created_at DateTime         @default(now())
+model Transaction {
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  user      User            @relation(fields: [userId], references: [id])
+  userId    String          @db.ObjectId
+  amount    Float
+  ref       String?         @db.ObjectId
+  type      TransactionType
+  createdAt DateTime        @default(now())
 }
 
-enum transaction_type {
+enum TransactionType {
   DEPOSIT
   WITHDRAW
   PAY_BILL
@@ -89,106 +90,67 @@ enum transaction_type {
   REFUND
 }
 
-model deposit {
-  id         String         @id @default(auto()) @map("_id") @db.ObjectId
-  user       user           @relation(fields: [user_id], references: [id])
-  user_id    String         @db.ObjectId
-  amount     Float
-  fee        Float
-  gateway    String
-  detail     String?
-  remark     String?
-  status     deposit_status
-  created_at DateTime       @default(now())
+model Deposit {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  user      User          @relation(fields: [userId], references: [id])
+  userId    String        @db.ObjectId
+  amount    Float
+  fee       Float
+  gateway   String
+  detail    String?
+  remark    String?
+  status    DepositStatus
+  createdAt DateTime      @default(now())
 }
 
-enum deposit_status {
+enum DepositStatus {
   COMPLETE
   CANCEL
   PENDING
 }
 
-model withdraw {
-  id         String         @id @default(auto()) @map("_id") @db.ObjectId
-  user       user           @relation(fields: [user_id], references: [id])
-  user_id    String         @db.ObjectId
-  amount     Float
-  fee        Float
-  bank_id    String
-  detail     String?
-  remark     String?
-  status     deposit_status
-  created_at DateTime       @default(now())
+model Withdraw {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  user      User          @relation(fields: [userId], references: [id])
+  userId    String        @db.ObjectId
+  amount    Float
+  fee       Float
+  bankId    String
+  detail    String?
+  remark    String?
+  status    DepositStatus
+  createdAt DateTime      @default(now())
 }
 
-enum withdraw_status {
+enum WithdrawStatus {
   COMPLETE
   CANCEL
   PENDING
 }
 
-model pay_bill {
-  id         String         @id @default(auto()) @map("_id") @db.ObjectId
-  user       user           @relation(fields: [user_id], references: [id])
-  user_id    String         @db.ObjectId
-  amount     Float
-  fee        Float
-  bank_id    String
-  detail     String?
-  remark     String?
-  status     deposit_status
-  created_at DateTime       @default(now())
+model Fee {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  amount    Float
+  type      FeeType
+  createdAt DateTime @default(now())
 }
 
-model bill {
-  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
-  owner              user        @relation(fields: [owner_id], references: [id])
-  owner_id           String      @db.ObjectId
-  actual_amount      Float
-  receive_amount     Float
-  fee_percent        Float
-  detail             String
-  image              String
-  confirmation_image String
-  category_id        String      @db.ObjectId
-  status             bill_status
-  updated_at         DateTime    @updatedAt
-  created_at         DateTime    @default(now())
-}
-
-model fee {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  user       user     @relation(fields: [user_id], references: [id])
-  user_id    String   @db.ObjectId
-  amount     Float
-  type       fee_type
-  created_at DateTime @default(now())
-}
-
-enum fee_type {
+enum FeeType {
   CREATE_BILL_FEE
   PAID_BILL_FEE
 }
 
-enum bill_status {
-  PENDING
-  WAITTING
-  PAYING
-  CONFIRMING
-  COMPLETE
-  INCOMPLETE
-  CANCEL
-}
-
-model category {
+model Category {
   id          String @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   description String
   image       String
-  status      status
+  status      Status
 }
 
-enum status {
+enum Status {
   ACTIVE
   INACTIVE
   PENDING

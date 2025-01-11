@@ -32,10 +32,10 @@ export const authOptions: NextAuthOptions = {
         const providerUserId = account.providerAccountId;
 
         // First, try to find the social account by provider and providerUserId
-        const socialAccount = await prisma.social_account.findFirst({
+        const socialAccount = await prisma.socialAccount.findFirst({
           where: {
             provider: provider,
-            provider_user_id: providerUserId,
+            providerUserId: providerUserId,
           },
           include: { user: true },
         });
@@ -57,10 +57,13 @@ export const authOptions: NextAuthOptions = {
               name: user.name,
               username: user.email?.split("@")[0] || providerUserId,
               balance: 0.0,
-              social_accounts: {
+              referralCode: Array.from({ length: 8 }, () =>
+                Math.floor(Math.random() * 10),
+              ).join(""),
+              socialAccounts: {
                 create: {
                   provider: provider,
-                  provider_user_id: providerUserId,
+                  providerUserId: providerUserId,
                   email: user.email || null,
                   name: user.name,
                   picture: user.image,
@@ -70,14 +73,14 @@ export const authOptions: NextAuthOptions = {
           });
         } else if (!socialAccount) {
           // If the user exists but no social account for this provider, create it
-          await prisma.social_account.create({
+          await prisma.socialAccount.create({
             data: {
               provider: provider,
-              provider_user_id: providerUserId,
+              providerUserId: providerUserId,
               email: user.email || null,
               name: user.name,
               picture: user.image,
-              user_id: dbUser.id, // Link it to the existing user
+              userId: dbUser.id, // Link it to the existing user
             },
           });
         }
