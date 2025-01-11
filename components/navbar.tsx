@@ -14,7 +14,6 @@ import {
   DialogDescription,
   DialogTitle,
   DialogTrigger,
-  DialogFooter,
 } from "./ui/dialog";
 import {
   DropdownMenu,
@@ -31,10 +30,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-
-import { Locale } from "@/i18n.config";
 
 export default function Navbar() {
   const { data: session } = useSession();
@@ -50,46 +45,47 @@ export default function Navbar() {
   ];
 
   const NavItems = () => (
-    <>
+    <div className="space-x-6">
       {navItems.map((item) => (
         <Link
           key={item.name}
           href={item.href}
-          className="text-gray-700 hover:text-blue-600 transition-colors"
+          className="text-gray-300 hover:text-white transition-colors"
         >
           {item.name}
         </Link>
       ))}
-    </>
+    </div>
   );
 
   const UserMenu = () => {
     const bgColor = useMemo(
-      () => session?.user?.username ? generateColorFromString(session.user.username) : generateColorFromString("default"),
+      () =>
+        session?.user?.username
+          ? generateColorFromString(session.user.username)
+          : generateColorFromString("default"),
       [session?.user?.username]
     );
-    const initials = session?.user?.username ? session.user.username.charAt(0).toUpperCase() : "user";
+    const initials = session?.user?.username
+      ? session.user.username.charAt(0).toUpperCase()
+      : "U";
 
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="relative h-8 w-8 rounded-full p-0 overflow-hidden"
+            className="relative h-10 w-10 rounded-full p-0 overflow-hidden"
             style={{ backgroundColor: bgColor }}
           >
             <span className="text-white font-medium">{initials}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="end" forceMount>
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">
-                {session?.user?.name}
-              </p>
-              <p className="text-xs leading-none text-muted-foreground">
-                {session?.user?.email}
-              </p>
+          <DropdownMenuLabel>
+            <div className="flex flex-col">
+              <p className="text-sm font-medium">{session?.user?.name}</p>
+              <p className="text-xs text-gray-500">{session?.user?.email}</p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
@@ -100,26 +96,23 @@ export default function Navbar() {
   };
 
   const LanguageSwitcher = () => {
-
-    const switchLanguage = (locale: Locale) => {
-      const path = pathname.split('/').slice(2).join('/');
+    const switchLanguage = (locale: string) => {
+      const path = pathname.split("/").slice(2).join("/");
       router.push(`/${locale}/${path}`);
     };
-  
 
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
-            <Globe className="h-[1.2rem] w-[1.2rem]" />
-            <span className="sr-only">Switch language</span>
+            <Globe className="h-5 w-5 text-gray-300" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => switchLanguage('en')}>
+          <DropdownMenuItem onClick={() => switchLanguage("en")}>
             English
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => switchLanguage('th')}>
+          <DropdownMenuItem onClick={() => switchLanguage("th")}>
             ไทย (Thai)
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -128,20 +121,21 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-gradient-to-r from-black via-gray-900 to-black shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold text-gray-800">
-              My Next.js App
-            </Link>
-          </div>
+        <div className="flex justify-between h-16 items-center">
+          {/* Logo */}
+          <Link href="/" className="text-2xl font-bold text-white">
+            Interact-X
+          </Link>
 
-          {/* Desktop menu */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* Desktop Menu */}
+          <div className="hidden md:flex items-center space-x-6">
             <NavItems />
             <LanguageSwitcher />
-            {!session ? (
+            {session ? (
+              <UserMenu />
+            ) : (
               <Dialog>
                 <DialogTrigger asChild>
                   <Button>Login</Button>
@@ -158,37 +152,49 @@ export default function Navbar() {
                   </Button>
                 </DialogContent>
               </Dialog>
-            ) : (
-              <UserMenu />
             )}
           </div>
 
-          {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          {/* Mobile Menu */}
+          <div className="md:hidden">
             <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" className="h-10 w-10 p-0">
-                  <Menu className="h-6 w-6" />
-                  <span className="sr-only">Open menu</span>
+                  <Menu className="h-6 w-6 text-white" />
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right">
+              <SheetContent side="top" className="bg-gray-800">
                 <SheetHeader>
-                  <SheetTitle>Menu</SheetTitle>
+                  <SheetTitle className="text-white">Menu</SheetTitle>
                 </SheetHeader>
-                <div className="flex flex-col space-y-4 mt-4">
-                  <NavItems />
-                  <LanguageSwitcher />
+                <div className="flex flex-col mt-4 space-y-4">
+                  <div className="flex flex-row space-x-2 justify-between	 items-center">
+                    <NavItems />
+                    <LanguageSwitcher />
+                  </div>
+
                   {!session ? (
-                    <Button onClick={() => signIn("google")}>Login</Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button>Login</Button>
+                      </DialogTrigger>
+                      <DialogContent className="bg-white dark:bg-gray-800">
+                        <DialogHeader>
+                          <DialogTitle>Login</DialogTitle>
+                          <DialogDescription>
+                            You can login with social.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <Button
+                          onClick={() => signIn("google")}
+                          className="mt-4"
+                        >
+                          Login with Google
+                        </Button>
+                      </DialogContent>
+                    </Dialog>
                   ) : (
-                    <>
-                      <p className="text-sm font-medium">{session?.user?.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {session?.user?.email}
-                      </p>
-                      <Button onClick={() => signOut()}>Log out</Button>
-                    </>
+                    <Button onClick={() => signOut()}>Log out</Button>
                   )}
                 </div>
               </SheetContent>
