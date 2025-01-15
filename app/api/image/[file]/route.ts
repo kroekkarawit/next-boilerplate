@@ -9,7 +9,7 @@ const s3 = new S3({
   region: "auto",
 });
 
-const BUCKET_NAME = "me-credit"; // Replace with your bucket name
+const BUCKET_NAME = process.env.R2_BUCKET_NAME; // Replace with your bucket name
 
 export const GET = async (request: Request, { params }: { params: any }) => {
   try {
