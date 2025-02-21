@@ -1,0 +1,44 @@
+name: Deploy to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: SSH into DigitalOcean Droplet
+        id: deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: ${{ secrets.DROPLET_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/root/next-boilerplate  #🔎 Fix name "next-boilerplate"
+            git pull origin main
+            docker-compose down
+            docker-compose pull
+            docker-compose up -d --build
+        continue-on-error: false
+
+      - name: Send Success Notification to Discord
+        if: success()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d \
+          '{"content": "🚀 Deployment to DigitalOcean is complete! ✅"}' \
+          "$DISCORD_WEBHOOK"
+
+      - name: Send Failure Notification to Discord
+        if: failure()
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl -H "Content-Type: application/json" -X POST -d \
+          '{"content": "❌ Deployment to DigitalOcean failed! Check logs: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}' \
+          "$DISCORD_WEBHOOK"
