@@ -13,7 +13,25 @@ const BUCKET_NAME = process.env.R2_BUCKET_NAME; // Replace with your bucket name
 
 export const GET = async (request: Request, { params }: { params: any }) => {
   try {
+    if (!params) {
+      return new Response(
+        JSON.stringify({ message: "files should not be empty" }),
+        {
+          status: 404,
+        },
+      );
+    }
+
     const { file } = params;
+
+    if (!file) {
+      return new Response(
+        JSON.stringify({ message: "file should not be empty" }),
+        {
+          status: 404,
+        },
+      );
+    }
 
     const url = s3.getSignedUrl("getObject", {
       Bucket: BUCKET_NAME,

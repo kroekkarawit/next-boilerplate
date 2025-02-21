@@ -6,8 +6,7 @@ import { Toaster } from "react-hot-toast";
 
 import { UserProvider } from "../app/context/UserContext";
 
-import { LanguageProvider } from "./language-provider";
-
+import { LanguageProvider } from "@/providers/language-provider";
 import BalanceUpdater from "@/components/balanceUpdater";
 
 export interface ProvidersProps {

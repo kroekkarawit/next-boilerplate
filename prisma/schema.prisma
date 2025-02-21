@@ -8,28 +8,31 @@ datasource db {
 }
 
 model User {
-  id             String          @id @default(auto()) @map("_id") @db.ObjectId
-  name           String?
-  username       String          @unique
-  password       String?
-  mobile         String?
-  email          String?
-  balance        Float           @default(0.00)
-  remark         String?
-  status         UserStatus      @default(ACTIVE)
-  ipAddress      String?
-  referralCode   String          @unique
-  referredBy     String?         @db.ObjectId
-  referredUsers  User[]          @relation("ReferralRelation")
-  referrer       User?           @relation("ReferralRelation", fields: [referredBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  updatedAt      DateTime        @updatedAt
-  createdAt      DateTime        @default(now())
+  id            String     @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  username      String     @unique
+  password      String?
+  mobile        String?
+  email         String?
+  remark        String?
+  status        UserStatus @default(ACTIVE)
+  ipAddress     String?
+  referralCode  String     @unique
+  referredBy    String?    @db.ObjectId
+  referredUsers User[]     @relation("ReferralRelation")
+  referrer      User?      @relation("ReferralRelation", fields: [referredBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  balance       Float      @default(0)
+  transferLimit Int?       @default(1000)
+
+  language LanguageType @default(EN)
+
+  updatedAt      DateTime         @updatedAt
+  createdAt      DateTime         @default(now())
   socialAccounts SocialAccount[]
   transactions   Transaction[]
   deposits       Deposit[]
-  withdraws      Withdraw[]
-  banks          Bank[]
-  fees           Fee[]
+  withdrawals    Withdrawal[]
+  paymentAccount PaymentAccount[]
 }
 
 model SocialAccount {
@@ -53,20 +56,47 @@ enum UserStatus {
   SUSPENDED
 }
 
-model Bank {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  user      User       @relation(fields: [userId], references: [id])
-  userId    String     @db.ObjectId
-  name      String
-  code      String
-  number    String
-  status    BankStatus
-  createdAt DateTime   @default(now())
+enum LanguageType {
+  TH
+  EN
 }
 
-enum BankStatus {
+
+model PaymentAccount {
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String         @db.ObjectId
+  type      PaymentType
+  gateway   PaymentGateway
+  details   Json // Stores gateway-specific details (e.g., PayPal email, Stripe account ID)
+  note      String?
+  status    PaymentStatus  @default(ACTIVE)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+}
+
+enum PaymentType {
+  BANK
+  PAYPAL
+  STRIPE
+  CRYPTO
+}
+
+enum PaymentGateway {
+  STRIPE
+  PAYPAL
+  BANK_TRANSFER
+  CRYPTO_BTC
+  CRYPTO_ETH
+  CRYPTO_USDT
+  ALIPAY
+  WECHAT
+}
+
+enum PaymentStatus {
   ACTIVE
   INACTIVE
+  PENDING_VERIFICATION
 }
 
 model Transaction {
@@ -74,7 +104,7 @@ model Transaction {
   user      User            @relation(fields: [userId], references: [id])
   userId    String          @db.ObjectId
   amount    Float
-  ref       String?         @db.ObjectId
+  ref       String?         
   type      TransactionType
   createdAt DateTime        @default(now())
 }
@@ -82,12 +112,12 @@ model Transaction {
 enum TransactionType {
   DEPOSIT
   WITHDRAW
-  PAY_BILL
   PURCHASE
   FEE
   COMMISSION
-  TRANFER
+  TRANSFER
   REFUND
+  PROFIT_SHARING
 }
 
 model Deposit {
@@ -109,45 +139,23 @@ enum DepositStatus {
   PENDING
 }
 
-model Withdraw {
-  id        String        @id @default(auto()) @map("_id") @db.ObjectId
-  user      User          @relation(fields: [userId], references: [id])
-  userId    String        @db.ObjectId
+model Withdrawal {
+  id        String         @id @default(auto()) @map("_id") @db.ObjectId
+  user      User           @relation(fields: [userId], references: [id])
+  userId    String         @db.ObjectId
   amount    Float
   fee       Float
   bankId    String
   detail    String?
   remark    String?
-  status    DepositStatus
-  createdAt DateTime      @default(now())
+  status    WithdrawStatus
+  createdAt DateTime       @default(now())
 }
 
 enum WithdrawStatus {
   COMPLETE
   CANCEL
   PENDING
-}
-
-model Fee {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String   @db.ObjectId
-  amount    Float
-  type      FeeType
-  createdAt DateTime @default(now())
-}
-
-enum FeeType {
-  CREATE_BILL_FEE
-  PAID_BILL_FEE
-}
-
-model Category {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  description String
-  image       String
-  status      Status
 }
 
 enum Status {

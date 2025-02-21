@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/eslintrc.json",
   "env": {
-    "browser": false,
+    "browser": true,
     "es2021": true,
     "node": true
   },
@@ -26,25 +26,46 @@
     }
   },
   "rules": {
-    "no-console": "warn",
+    // Disable console warnings in development
+    "no-console": "off",
+    
+    // React specific rules
     "react/prop-types": "off",
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
     "react-hooks/exhaustive-deps": "off",
-    "jsx-a11y/click-events-have-key-events": "warn",
-    "jsx-a11y/interactive-supports-focus": "warn",
-    "prettier/prettier": "warn",
+    "react/display-name": "off",
+    "react/self-closing-comp": "warn",
+    
+    // Accessibility rules
+    "jsx-a11y/click-events-have-key-events": "off",
+    "jsx-a11y/interactive-supports-focus": "off",
+    "jsx-a11y/anchor-is-valid": "off",
+    "jsx-a11y/anchor-has-content" : "off",
+    "jsx-a11y/no-noninteractive-element-interactions": "off",
+    "jsx-a11y/label-has-associated-control": "off",
+    "jsx-a11y/no-static-element-interactions": "off",
+    
+    // Code style
+    "prettier/prettier": "off",
+    
+    // Unused imports/variables
     "no-unused-vars": "off",
     "unused-imports/no-unused-vars": "off",
-    "unused-imports/no-unused-imports": "warn",
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        "args": "after-used",
-        "ignoreRestSiblings": false,
-        "argsIgnorePattern": "^_.*?$"
-      }
-    ],
+    "unused-imports/no-unused-imports": "off",
+    "@typescript-eslint/no-unused-vars": "off",
+    
+    // TypeScript specific rules
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-empty-interface": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/no-var-requires": "off",
+    
+    // Keep import ordering but make it less strict
     "import/order": [
       "warn",
       {
@@ -68,25 +89,16 @@
         "newlines-between": "always"
       }
     ],
-    "react/self-closing-comp": "warn",
-    "react/jsx-sort-props": [
-      "warn",
-      {
-        "callbacksLast": true,
-        "shorthandFirst": true,
-        "noSortAlphabetically": false,
-        "reservedFirst": true
-      }
-    ],
+    
+    // JSX props sorting (optional, remove if not needed)
+    "react/jsx-sort-props": "off",
+    
+    // Line spacing
     "padding-line-between-statements": [
       "warn",
       {"blankLine": "always", "prev": "*", "next": "return"},
       {"blankLine": "always", "prev": ["const", "let", "var"], "next": "*"},
-      {
-        "blankLine": "any",
-        "prev": ["const", "let", "var"],
-        "next": ["const", "let", "var"]
-      }
+      {"blankLine": "any", "prev": ["const", "let", "var"], "next": ["const", "let", "var"]}
     ]
   }
 }

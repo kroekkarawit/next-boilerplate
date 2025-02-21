@@ -102,3 +102,35 @@
     @apply px-4;
   }
 }
+
+
+/* Apply styles globally */
+::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #2b2b2b; /* Darker background for the track */
+  border-radius: 6px; /* Rounded corners */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #555; /* Thumb color */
+  border-radius: 6px; /* Rounded corners */
+  border: 2px solid #2b2b2b; /* Adds spacing and blends with the track */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888; /* Lighter thumb color on hover */
+}
+
+/* For Firefox */
+* {
+  scrollbar-width: thin; /* Make the scrollbar thinner */
+  scrollbar-color: #555 #2b2b2b; /* Thumb color and track color */
+}
+
+/* Optional: Add transition effect */
+::-webkit-scrollbar-thumb {
+  transition: background-color 0.3s ease;
+}

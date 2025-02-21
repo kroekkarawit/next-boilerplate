@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { isUndefined } from "lodash";
+import { StarClass } from "@prisma/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -9,7 +11,7 @@ type ColorTheme = "light" | "dark";
 
 export const generateColorFromString = (
   str: string | undefined,
-  theme?: ColorTheme, // Made optional
+  theme?: ColorTheme // Made optional
 ) => {
   if (!str) {
     str = "colored";
@@ -31,7 +33,7 @@ export const generateColorFromString = (
     dark: {
       saturation: 30,
       lightness: 20,
-    },
+    }
   };
 
   // Use light theme as default if theme is undefined
@@ -52,10 +54,52 @@ export const formatNumber = (value: number, decimals: number = 2): string => {
   return decimal ? `${integerWithCommas}.${decimal}` : integerWithCommas;
 };
 
+export const extraOfferStarClass = (starClass?: StarClass | string) => {
+  if (!starClass) starClass = "SMALL"; // Default to SMALL if null/undefined
+  const starClassUpper = starClass.toUpperCase() as StarClass;
+
+  switch (starClassUpper) {
+    case "SMALL":
+      return {
+        maxMedia: 5,
+        canSetStarPrivate: false,
+        canSetStarPassword: false,
+        canSetStarSuffix: false,
+        hasCertificate: false,
+      };
+    case "MEDIUM":
+      return {
+        maxMedia: 10,
+        canSetStarPrivate: true,
+        canSetStarPassword: true,
+        canSetStarSuffix: false,
+        hasCertificate: true,
+      };
+    case "BIG":
+      return {
+        maxMedia: 10,
+        canSetStarPrivate: true,
+        canSetStarPassword: true,
+        canSetStarSuffix: true,
+        hasCertificate: true,
+      };
+    case "SUPER":
+      return {
+        maxMedia: 20,
+        canSetStarPrivate: true,
+        canSetStarPassword: true,
+        canSetStarSuffix: true,
+        hasCertificate: true,
+      };
+    default:
+      throw new Error(`Invalid Star Class: ${starClass}`);
+  }
+};
+
 export const getLocalStorage = () => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     return window.localStorage;
   }
-
+  
   return null;
 };
