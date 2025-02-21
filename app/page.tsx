@@ -1,6 +1,7 @@
+"use client";
 import React from "react";
-import { useTranslations } from "next-intl";
 import { ArrowDown, Star, Zap, Shield } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface FeatureCardProps {
   icon: React.ReactNode;
@@ -21,13 +22,13 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
 );
 
 const LandingPage: React.FC = () => {
-  const homeI18n = useTranslations("home");
+  const { t } = useTranslation(); // Get both t and i18n
 
   return (
     <div className="bg-gradient-to-b from-blue-600 to-blue-800 text-white min-h-screen">
       <section className="h-screen flex flex-col items-center justify-center text-center px-4">
         <h1 className="text-5xl md:text-6xl font-bold mb-6">
-          {homeI18n("title")}
+          {t("home.title")}
         </h1>
         <p className="text-xl mb-8 max-w-2xl">
           Streamline your workflow, boost productivity, and achieve your goals

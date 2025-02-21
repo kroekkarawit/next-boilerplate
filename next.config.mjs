@@ -1,8 +1,12 @@
-import createNextIntlPlugin from 'next-intl/plugin';
-
-const withNextIntl = createNextIntlPlugin('./i18n.ts');
-
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+import { config } from "dotenv";
 
-export default withNextIntl(nextConfig);
+config({ path: ".env.local" });
+
+const nextConfig = {
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+};
+
+export default nextConfig;

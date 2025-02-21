@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 
+import dynamic from "next/dynamic";
 import localFont from "next/font/local";
 
 import "./globals.css";
-import { Providers } from "./providers";
+import { Providers } from "../providers/providers";
 
-import Navbar from "@/components/navbar";
+const Navbar = dynamic(() => import("@/components/navbar"), {
+  ssr: false, // Disable server-side rendering for this component
+});
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -20,15 +23,11 @@ export const metadata: Metadata = {
 
 type Props = {
   children: React.ReactNode;
-  params: { locale: string };
 };
 
-export default async function RootLayout({
-  children,
-  params: { locale },
-}: Props) {
+export default async function RootLayout({ children }: Props) {
   return (
-    <html lang={locale}>
+    <html lang="en">
       <body className={`${geistSans.variable} font-sans antialiased`}>
         <Providers>
           <Navbar />
