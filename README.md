@@ -1,36 +1,150 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next.js Boilerplate
+
+A modern, feature-rich boilerplate for Next.js applications with TypeScript, authentication, internationalization, and more.
+
+## Features
+
+- 🚀 **Next.js 14** with App Router
+- 💨 **TypeScript** for type safety
+- 🔐 **NextAuth.js** for authentication (Google, Line)
+- 🌐 **i18n** support with react-i18next
+- 💅 **Tailwind CSS** with custom configuration
+- 🎨 **Shadcn/ui** components
+- 💳 **Stripe** integration for payments
+- 📦 **MongoDB** with Prisma ORM
+- ☁️ **Cloudflare R2** for file storage
+- 🐳 **Docker** support
+- 🔄 **GitHub Actions** for CI/CD
+- ⚡ **Redis** for caching
+- 📱 **Responsive** design
+
+## Prerequisites
+
+- Node.js 22.x
+- MongoDB database
+- Cloudflare R2 bucket
+- Redis (optional)
+- Stripe account (optional)
 
 ## Getting Started
 
-First, run the development server:
-
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/next-boilerplate.git
+cd next-boilerplate
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Set up environment variables:
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Update the following variables in `.env.local`:
+```env
+# Authentication
+AUTH_GOOGLE_ID=
+AUTH_GOOGLE_SECRET=
+LINE_CLIENT_ID=
+LINE_CLIENT_SECRET=
 
-## Learn More
+# Database
+MONGODB_URI=
 
-To learn more about Next.js, take a look at the following resources:
+# Storage
+R2_BUCKET_NAME=
+R2_ENDPOINT=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Payments
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+5. Generate Prisma client:
+```bash
+npm run prisma-generate
+```
 
-## Deploy on Vercel
+6. Run the development server:
+```bash
+npm run dev
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+├── app/                  # App router pages
+├── components/          # React components
+├── config/             # Configuration files
+├── lib/                # Utility functions
+├── prisma/            # Database schema and migrations
+├── providers/         # React context providers
+├── public/            # Static assets
+└── i18n/              # Internationalization files
+```
+
+## Available Scripts
+
+```bash
+npm run dev            # Start development server
+npm run build          # Build for production
+npm run start          # Start production server
+npm run lint          # Run ESLint
+npm run prisma-push    # Push database schema changes
+npm run prisma-pull    # Pull database schema
+```
+
+## Docker Deployment
+
+1. Build the Docker image:
+```bash
+docker-compose build
+```
+
+2. Run the container:
+```bash
+docker-compose up -d
+```
+
+## Environment Variables
+
+See `.env.example` for all required environment variables.
+
+## Authentication
+
+This boilerplate includes NextAuth.js with the following providers:
+- Google
+- Line
+
+To add more providers, modify `lib/auth.ts`.
+
+## Database
+
+Uses Prisma ORM with MongoDB. The schema is defined in `prisma/schema.prisma`.
+
+## File Storage
+
+Uses Cloudflare R2 for file storage. Configure bucket settings in your R2 dashboard.
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Support
+
+For support, email your-email@example.com or raise an issue in the repository.
