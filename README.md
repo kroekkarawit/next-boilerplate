@@ -30,7 +30,7 @@ A modern, feature-rich boilerplate for Next.js applications with TypeScript, aut
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/next-boilerplate.git
+git clone https://github.com/kroekkarawit/next-boilerplate.git
 cd next-boilerplate
 ```
 
@@ -147,4 +147,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Support
 
-For support, email your-email@example.com or raise an issue in the repository.
+For support, raise an issue in the repository.
