@@ -26,21 +26,15 @@ interface FeatureCardProps {
 const FeatureCard = ({ icon, title, description, metrics, delay = 0 }: FeatureCardProps) => {
   const [ref, inView] = useInView({
     triggerOnce: true,
-    threshold: 0.2,
-    rootMargin: '-30px 0px',
+    threshold: 0.1,
   });
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ 
-        duration: 0.4, 
-        delay, 
-        ease: [0.25, 0.46, 0.45, 0.94],
-        type: "tween"
-      }}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
       className="group relative"
     >
       <div className="h-full p-8 rounded-2xl bg-zinc-900/30 border border-zinc-800/50 hover:border-zinc-700/70 backdrop-blur-sm transition-all duration-300 group-hover:bg-zinc-900/50">
@@ -80,8 +74,7 @@ const FeatureCard = ({ icon, title, description, metrics, delay = 0 }: FeatureCa
 export const FeaturesSection = () => {
   const [titleRef, titleInView] = useInView({
     triggerOnce: true,
-    threshold: 0.3,
-    rootMargin: '-50px 0px',
+    threshold: 0.1,
   });
 
   const features = [
@@ -146,13 +139,9 @@ export const FeaturesSection = () => {
       {/* Section Header */}
       <div ref={titleRef} className="text-center mb-16 max-w-4xl mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={titleInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ 
-            duration: 0.4, 
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
-          }}
+          transition={{ duration: 0.6 }}
           className="inline-flex items-center px-4 py-2 rounded-lg bg-zinc-900/50 border border-zinc-800/50 text-zinc-300 text-sm font-medium backdrop-blur-sm mb-8"
         >
           <div className="w-2 h-2 rounded-full bg-emerald-400 mr-2" />
@@ -160,14 +149,9 @@ export const FeaturesSection = () => {
         </motion.div>
         
         <motion.h2
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={titleInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ 
-            duration: 0.5, 
-            delay: 0.1,
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
-          }}
+          transition={{ duration: 0.6, delay: 0.2 }}
           className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight"
         >
           Built for
@@ -175,14 +159,9 @@ export const FeaturesSection = () => {
         </motion.h2>
         
         <motion.p
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={titleInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ 
-            duration: 0.4, 
-            delay: 0.2,
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
-          }}
+          transition={{ duration: 0.6, delay: 0.4 }}
           className="text-xl text-zinc-400 leading-relaxed font-light"
         >
           Every component designed with enterprise requirements in mind. 
@@ -196,7 +175,7 @@ export const FeaturesSection = () => {
           <FeatureCard
             key={feature.title}
             {...feature}
-            delay={index * 0.03}
+            delay={index * 0.1}
           />
         ))}
       </div>

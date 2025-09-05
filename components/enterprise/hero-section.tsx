@@ -2,20 +2,20 @@
 
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
-import { useInView } from 'react-intersection-observer';
-
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { useInView } from 'react-intersection-observer';
 import { ArrowIcon, CheckIcon } from './icons';
 
 export const HeroSection = () => {
+  const { t } = useTranslation();
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 300], [0, -100]);
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   const [ref, inView] = useInView({
     triggerOnce: true,
-    threshold: 0.2,
-    rootMargin: '-50px 0px',
+    threshold: 0.1,
   });
 
   const trustIndicators = [
@@ -38,13 +38,9 @@ export const HeroSection = () => {
       >
         {/* Trust badge */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ 
-            duration: 0.5, 
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
-          }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           className="mb-8"
         >
           <div className="inline-flex items-center px-4 py-2 rounded-lg bg-zinc-900/50 border border-zinc-800/50 text-zinc-300 text-sm font-medium backdrop-blur-sm">
@@ -55,14 +51,9 @@ export const HeroSection = () => {
 
         {/* Main headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ 
-            duration: 0.6, 
-            delay: 0.1, 
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
-          }}
+          transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="text-5xl md:text-7xl lg:text-8xl font-bold mb-8 leading-[0.9] tracking-tight"
         >
           <span className="text-white">
@@ -76,14 +67,9 @@ export const HeroSection = () => {
 
         {/* Subtitle */}
         <motion.p
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ 
-            duration: 0.5, 
-            delay: 0.2, 
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
-          }}
+          transition={{ duration: 0.8, delay: 0.4 }}
           className="text-xl md:text-2xl text-zinc-400 mb-8 max-w-4xl mx-auto leading-relaxed font-light"
         >
           Production-ready Next.js boilerplate engineered for scale. 
@@ -92,50 +78,29 @@ export const HeroSection = () => {
 
         {/* Trust indicators */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ 
-            duration: 0.5, 
-            delay: 0.3, 
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
-          }}
+          transition={{ duration: 0.8, delay: 0.5 }}
           className="flex flex-col sm:flex-row items-center justify-center space-y-2 sm:space-y-0 sm:space-x-8 mb-12 text-sm text-zinc-500"
         >
           {trustIndicators.map((indicator, index) => (
-            <motion.div 
-              key={index} 
-              className="flex items-center"
-              initial={{ opacity: 0, x: -10 }}
-              animate={inView ? { opacity: 1, x: 0 } : {}}
-              transition={{ 
-                duration: 0.4, 
-                delay: 0.3 + (index * 0.05),
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }}
-            >
+            <div key={index} className="flex items-center">
               <CheckIcon className="w-4 h-4 text-emerald-400 mr-2 flex-shrink-0" />
               {indicator}
-            </motion.div>
+            </div>
           ))}
         </motion.div>
 
         {/* CTA Buttons */}
         <motion.div
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ 
-            duration: 0.5, 
-            delay: 0.4, 
-            ease: [0.25, 0.46, 0.45, 0.94],
-            type: "tween"
-          }}
+          transition={{ duration: 0.8, delay: 0.6 }}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
         >
           <motion.div 
             whileHover={{ scale: 1.02 }} 
             whileTap={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
             className="relative group"
           >
             <Button 
@@ -150,7 +115,6 @@ export const HeroSection = () => {
           <motion.div 
             whileHover={{ scale: 1.02 }} 
             whileTap={{ scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
             <Button 
               variant="outline" 
@@ -164,38 +128,30 @@ export const HeroSection = () => {
 
         {/* Metrics */}
         <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.8 }}
           className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-2xl mx-auto text-center"
         >
-          {[
-            { number: "50K+", label: "Developers" },
-            { number: "1M+", label: "API Requests/day" },
-            { number: "99.9%", label: "Uptime" }
-          ].map((metric, index) => (
-            <motion.div
-              key={metric.label}
-              initial={{ opacity: 0, y: 10 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ 
-                duration: 0.4, 
-                delay: 0.5 + (index * 0.05),
-                ease: [0.25, 0.46, 0.45, 0.94]
-              }}
-            >
-              <div className="text-2xl font-bold text-white mb-1">{metric.number}</div>
-              <div className="text-sm text-zinc-500 font-medium">{metric.label}</div>
-            </motion.div>
-          ))}
+          <div>
+            <div className="text-2xl font-bold text-white mb-1">50K+</div>
+            <div className="text-sm text-zinc-500 font-medium">Developers</div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-white mb-1">1M+</div>
+            <div className="text-sm text-zinc-500 font-medium">API Requests/day</div>
+          </div>
+          <div>
+            <div className="text-2xl font-bold text-white mb-1">99.9%</div>
+            <div className="text-sm text-zinc-500 font-medium">Uptime</div>
+          </div>
         </motion.div>
 
         {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
-          transition={{ 
-            duration: 0.4, 
-            delay: 0.7,
-            ease: [0.25, 0.46, 0.45, 0.94]
-          }}
+          transition={{ duration: 0.8, delay: 1 }}
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
         >
           <motion.div
