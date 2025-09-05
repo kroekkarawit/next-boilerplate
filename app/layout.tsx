@@ -1,14 +1,10 @@
 import type { Metadata } from "next";
 
-import dynamic from 'next/dynamic';
 import localFont from "next/font/local";
 
 import "./globals.css";
 import { Providers } from "../providers/providers";
-
-const Navbar = dynamic(() => import("@/components/navbar"), {
-  ssr: false, // Disable server-side rendering for this component
-});
+import Navbar from "@/components/navbar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

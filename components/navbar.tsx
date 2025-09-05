@@ -94,7 +94,7 @@ export default function Navbar() {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => router.push("/my-stars")}>{t('navbar.auth.myStars')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push("/profile")}>{t('navbar.auth.profile')}</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()}>{t('navbar.auth.logout')}</DropdownMenuItem>
         </DropdownMenuContent>

@@ -4,17 +4,19 @@ import { signOut } from "next-auth/react";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function LogoutPage({ params }: { params: { locale: string } }) {
+export default function LogoutPage({ params }: { params: Promise<{ locale: string }> }) {
   const router = useRouter();
 
   useEffect(() => {
     const handleLogout = async () => {
       await signOut({ redirect: false });
-      router.push(`/${params.locale}`);
+      const resolvedParams = await params;
+
+      router.push(`/${resolvedParams.locale}`);
     };
 
     handleLogout();
-  }, [router, params.locale]);
+  }, [router, params]);
 
   return (
     <div className="relative flex flex-col items-center justify-center min-h-screen bg-[#000010] overflow-hidden">

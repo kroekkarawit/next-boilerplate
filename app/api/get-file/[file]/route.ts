@@ -13,10 +13,11 @@ const BUCKET_NAME = process.env.R2_BUCKET_NAME || "";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { file: string } },
+  { params }: { params: Promise<{ file: string }> },
 ) {
   try {
-    const { file } = params;
+    const resolvedParams = await params;
+    const { file } = resolvedParams;
 
     if (!file) {
       return new NextResponse(

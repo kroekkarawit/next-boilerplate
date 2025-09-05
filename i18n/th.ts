@@ -20,7 +20,7 @@ export const thTranslations = {
       logout: 'ออกจากระบบ',
       loginWithGoogle: 'เข้าสู่ระบบด้วย Google',
       loginDescription: 'คุณสามารถเข้าสู่ระบบด้วยโซเชียลมีเดีย',
-      myStars: 'ดวงดาวของฉัน'
+      profile: 'โปรไฟล์'
     },
     menu: {
       title: 'เมนู'

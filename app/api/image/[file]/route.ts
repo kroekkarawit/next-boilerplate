@@ -11,9 +11,11 @@ const s3 = new S3({
 
 const BUCKET_NAME = process.env.R2_BUCKET_NAME; // Replace with your bucket name
 
-export const GET = async (request: Request, { params }: { params: any }) => {
+export const GET = async (request: Request, { params }: { params: Promise<{ file: string }> }) => {
   try {
-    if (!params) {
+    const resolvedParams = await params;
+    
+    if (!resolvedParams) {
       return new Response(
         JSON.stringify({ message: "files should not be empty" }),
         {
@@ -22,7 +24,7 @@ export const GET = async (request: Request, { params }: { params: any }) => {
       );
     }
 
-    const { file } = params;
+    const { file } = resolvedParams;
 
     if (!file) {
       return new Response(

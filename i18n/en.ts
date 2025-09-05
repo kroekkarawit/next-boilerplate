@@ -20,7 +20,7 @@ export const enTranslations = {
       logout: 'Log out',
       loginWithGoogle: 'Login with Google',
       loginDescription: 'You can login with social',
-      myStars: 'My Star'
+      profile: 'Profile'
     },
     menu: {
       title: 'Menu'
