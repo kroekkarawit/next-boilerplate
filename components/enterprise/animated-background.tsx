@@ -15,7 +15,7 @@ interface Particle {
 export const AnimatedBackground = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const particles = useRef<Particle[]>([]);
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const canvas = canvasRef.current;

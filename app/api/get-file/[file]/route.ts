@@ -67,7 +67,14 @@ export async function GET(
     }
 
     // Create the NextResponse with the body from S3 (data.Body)
-    return new NextResponse(data.Body as Buffer, {
+    // Convert the S3 Body to a format compatible with NextResponse
+    const body = data.Body instanceof Buffer
+      ? data.Body
+      : typeof data.Body === 'string'
+      ? data.Body
+      : undefined;
+
+    return new NextResponse(body, {
       status,
       headers,
     });

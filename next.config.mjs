@@ -4,9 +4,6 @@ import { config } from "dotenv";
 config({ path: ".env.local" });
 
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     remotePatterns: [
       {
