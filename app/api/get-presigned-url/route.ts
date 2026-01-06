@@ -1,15 +1,17 @@
 import { getServerSession } from "next-auth/next";
-import { S3 } from "aws-sdk";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 import { authOptions } from "@/lib/auth";
 
 const { v4: uuidv4 } = require("uuid");
 
-const s3 = new S3({
+const s3Client = new S3Client({
   endpoint: process.env.R2_ENDPOINT,
-  accessKeyId: process.env.R2_ACCESS_KEY_ID,
-  secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-  signatureVersion: "v4",
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
+  },
   region: "auto",
 });
 
@@ -28,14 +30,15 @@ export const GET = async () => {
 
     const fileName = `${uuidv4()}.jpg`; // Assuming the file type is always .png
 
-    const params = {
+    const command = new PutObjectCommand({
       Bucket: BUCKET_NAME,
       Key: fileName,
-      Expires: 60 * 60, // URL expiration time in seconds
       ContentType: "image/jpg", // Assuming the content type is always image/png
-    };
+    });
 
-    const presignedUrl = s3.getSignedUrl("putObject", params);
+    const presignedUrl = await getSignedUrl(s3Client, command, {
+      expiresIn: 60 * 60, // URL expiration time in seconds
+    });
 
     return new Response(JSON.stringify({ presignedUrl, fileName }), {
       status: 200,

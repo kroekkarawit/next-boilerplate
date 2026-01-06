@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { S3 } from "aws-sdk";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 
-const s3 = new S3({
+const s3Client = new S3Client({
   endpoint: process.env.R2_ENDPOINT,
-  accessKeyId: process.env.R2_ACCESS_KEY_ID,
-  secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-  signatureVersion: "v4",
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
+  },
   region: "auto",
 });
 
@@ -30,18 +31,14 @@ export async function GET(
     const rangeHeader = req.headers.get("range");
 
     // Prepare S3 params
-    const s3Params: S3.GetObjectRequest = {
+    const command = new GetObjectCommand({
       Bucket: BUCKET_NAME,
       Key: file,
-    };
-
-    // If there's a Range header, pass it to S3 so we can do a partial get
-    if (rangeHeader) {
-      s3Params.Range = rangeHeader;
-    }
+      Range: rangeHeader || undefined,
+    });
 
     // Fetch from S3 / R2
-    const data = await s3.getObject(s3Params).promise();
+    const data = await s3Client.send(command);
 
     // Build basic headers
     const headers: Record<string, string> = {
@@ -68,11 +65,9 @@ export async function GET(
 
     // Create the NextResponse with the body from S3 (data.Body)
     // Convert the S3 Body to a format compatible with NextResponse
-    const body = data.Body instanceof Buffer
-      ? data.Body
-      : typeof data.Body === 'string'
-      ? data.Body
-      : undefined;
+    // In SDK v3, Body is a ReadableStream or Blob
+    const bodyBytes = data.Body ? await data.Body.transformToByteArray() : undefined;
+    const body = bodyBytes ? Buffer.from(bodyBytes) : undefined;
 
     return new NextResponse(body, {
       status,

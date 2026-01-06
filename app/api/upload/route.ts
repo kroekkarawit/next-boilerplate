@@ -4,18 +4,19 @@ import path from "path";
 import { promisify } from "util";
 import { spawn } from "child_process";
 
-import { S3 } from "aws-sdk";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getServerSession } from "next-auth/next";
 
 import { authOptions } from "@/lib/auth";
 
 const { v4: uuidv4 } = require("uuid");
 
-const s3 = new S3({
+const s3Client = new S3Client({
   endpoint: process.env.R2_ENDPOINT,
-  accessKeyId: process.env.R2_ACCESS_KEY_ID,
-  secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-  signatureVersion: "v4",
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
+  },
   region: "auto",
 });
 
@@ -89,14 +90,12 @@ export const POST = async (req: Request) => {
     // Upload to R2
     const fileBuffer = fs.readFileSync(finalFilePath);
 
-    await s3
-      .putObject({
-        Bucket: BUCKET_NAME || "",
-        Key: fileName,
-        Body: fileBuffer,
-        ContentType: file.type === "video/quicktime" ? "video/mp4" : file.type,
-      })
-      .promise();
+    await s3Client.send(new PutObjectCommand({
+      Bucket: BUCKET_NAME || "",
+      Key: fileName,
+      Body: fileBuffer,
+      ContentType: file.type === "video/quicktime" ? "video/mp4" : file.type,
+    }));
 
     // Cleanup temp files
     fs.unlinkSync(tempFilePath);

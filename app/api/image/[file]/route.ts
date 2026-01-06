@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
-import { S3 } from "aws-sdk";
+import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-const s3 = new S3({
+const s3Client = new S3Client({
   endpoint: process.env.R2_ENDPOINT,
-  accessKeyId: process.env.R2_ACCESS_KEY_ID,
-  secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-  signatureVersion: "v4",
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || "",
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || "",
+  },
   region: "auto",
 });
 
@@ -35,10 +37,13 @@ export const GET = async (request: Request, { params }: { params: Promise<{ file
       );
     }
 
-    const url = s3.getSignedUrl("getObject", {
+    const command = new GetObjectCommand({
       Bucket: BUCKET_NAME,
       Key: file,
-      Expires: 60 * 60 * 2, // URL expires in 2 hour
+    });
+
+    const url = await getSignedUrl(s3Client, command, {
+      expiresIn: 60 * 60 * 2, // URL expires in 2 hours
     });
 
     return NextResponse.redirect(url);
